@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const WebSocket = require('ws');
 const chokidar = require('chokidar');
+const path = require('path');
 
 const server = http.createServer((req, res) => {
     fs.readFile(path.join(__dirname, 'index.html'), 'utf-8', (error, content) => {
