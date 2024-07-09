@@ -5,73 +5,106 @@ const chokidar = require('chokidar');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-    fs.readFile(path.join(__dirname, 'index.html'), 'utf-8', (error, content) => {
-        if (error) {
-            console.log('Error: ', error);
-            response.writeHead(404);
-            response.end('Error: ' + error);
-        } else {
-            response.writeHead(200, { 'Content-Type': 'text/html' });
-            response.end(content, 'utf-8');
-        }
-    });
+    handleFileRequest(req, res);
 
     if (req.method === 'POST' && req.url === "/upload") {
-        let body = '';
-
-        req.on('data', (data) => {
-            body += data;
-        });
-        req.on('end', () => {
-            const content = Buffer.from(body, 'binary');
-            const fileName = `uploads/image_${Date.now()}.txt`;
-
-            fs.writeFile(fileName, content, (err) => {
-                if (err) {
-                    throw err;
-                }
-                res.end('File uploaded and saved');
-            });
-        });
+        return uploadImage(req, res);
     }
 
     if (req.method === 'GET' && req.url === '/images') {
-        fs.readdir('uploads', (err, files) => {
-            if (err) {
-                throw err;
-            }
-
-            const fileNames = files.filter((file) => file.endsWith('.txt'));
-            const fileContents = fileNames.map((fileName) => {
-                return {
-                    fileName: fileName,
-                    content: fs.readFileSync(`uploads/${fileName}`, 'utf8')
-                };
-            });
-
-            res.end(JSON.stringify(fileContents));
-        });
+        return getImages(req, res);
     }
 
     if (req.method === "POST" && req.url === "/clearImages") {
-        try {
-            const files = fs.readdirSync("./uploads");
-
-            files.forEach(file => {
-                fs.unlinkSync(`./uploads/${file}`);
-            });
-
-            res.writeHead(200, {"Content-Type": "text/plain"});
-            res.end("Images successfully cleared and folder deleted");
-        } catch (error) {
-            console.error("Error clearing images:", error);
-            res.writeHead(500, {"Content-Type": "text/plain"});
-            res.end("Error clearing images");
-        }
+        return clearImages(req, res);
     }
 }).listen(2000, () => {
     console.log('Server is running on port 2000');
 });
+
+const getImages = (req, res) => {
+    fs.readdir('uploads', (err, files) => {
+        if (err) {
+            throw err;
+        }
+
+        const fileNames = files.filter((file) => file.endsWith('.txt'));
+        const fileContents = fileNames.map((fileName) => {
+            return {
+                fileName: fileName,
+                content: fs.readFileSync(`uploads/${fileName}`, 'utf8')
+            };
+        });
+
+        res.end(JSON.stringify(fileContents));
+    });
+}
+
+const clearImages = (req, res) => {
+    try {
+        const files = fs.readdirSync("./uploads");
+
+        files.forEach(file => {
+            fs.unlinkSync(`./uploads/${file}`);
+        });
+
+        res.writeHead(200, {"Content-Type": "text/plain"});
+        res.end("Images successfully cleared and folder deleted");
+    } catch (error) {
+        console.error("Error clearing images:", error);
+        res.writeHead(500, {"Content-Type": "text/plain"});
+        res.end("Error clearing images");
+    }
+}
+
+const uploadImage = (req, res) => {
+    let body = '';
+
+    req.on('data', (data) => {
+        body += data;
+    });
+    req.on('end', () => {
+        const content = Buffer.from(body, 'binary');
+        const fileName = `uploads/image_${Date.now()}.txt`;
+
+        fs.writeFile(fileName, content, (err) => {
+            if (err) {
+                throw err;
+            }
+            res.end('File uploaded and saved');
+        });
+    });
+}
+
+const handleFileRequest = (req, res) => {
+    var filePath = '.' + req.url;
+
+    if (filePath === './')
+        filePath = './index.html';
+
+    var extname = path.extname(filePath);
+    var contentType = 'text/html';
+
+    switch (extname) {
+        case '.js':
+            contentType = 'text/javascript';
+            break;
+        case '.css':
+            contentType = 'text/css';
+            break;
+    }
+
+    fs.readFile(filePath, function(error, content) {
+        if (error) {
+            res.writeHead(500);
+            res.end('Error: ' + error);
+        }
+        else {
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content, 'utf-8');
+        }
+    });
+}
 
 const wss = new WebSocket.Server({ server});
 const watcher = chokidar.watch('uploads');
