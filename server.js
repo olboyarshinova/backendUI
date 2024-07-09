@@ -8,15 +8,15 @@ const server = http.createServer((req, res) => {
     handleFileRequest(req, res);
 
     if (req.method === 'POST' && req.url === "/upload") {
-        return uploadImage(req, res);
+        uploadImage(req, res);
     }
 
     if (req.method === 'GET' && req.url === '/images') {
-        return getImages(req, res);
+        getImages(req, res);
     }
 
     if (req.method === "POST" && req.url === "/clearImages") {
-        return clearImages(req, res);
+        clearImages(req, res);
     }
 }).listen(2000, () => {
     console.log('Server is running on port 2000');
