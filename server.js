@@ -4,6 +4,17 @@ const WebSocket = require('ws');
 const chokidar = require('chokidar');
 
 const server = http.createServer((req, res) => {
+    fs.readFile(path.join(__dirname, 'index.html'), 'utf-8', (error, content) => {
+        if (error) {
+            console.log('Error: ', error);
+            response.writeHead(404);
+            response.end('Error: ' + error);
+        } else {
+            response.writeHead(200, { 'Content-Type': 'text/html' });
+            response.end(content, 'utf-8');
+        }
+    });
+
     if (req.method === 'POST' && req.url === "/upload") {
         let body = '';
 
