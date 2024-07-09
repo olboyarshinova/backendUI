@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Slider app</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<script src="javascripts/uploadImages.js" defer></script>
+<script src="javascripts/clearImages.js" defer></script>
+
+<body>
+<div id="images-container" class="images-container"></div>
+<div class="menu">
+    <button class="select-btn">
+        Select image
+    </button>
+    <input
+            id="fileInput"
+            type="file"
+            accept="image/jpeg, image/jpg, image/png"
+    >
+    <button id="uploadButton">
+        Upload image
+    </button>
+    <button id="clearButton">
+        Clear images
+    </button>
+    <div id="status"></div>
+</div>
+</body>
+</html>
