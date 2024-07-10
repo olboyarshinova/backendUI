@@ -139,10 +139,7 @@ const handleFileRequest = (req, res) => {
                 contentType = 'application/json';
         }
 
-        console.log(req.method, req.url, extname, filePath, contentType)
-
         fs.readFile(filePath, function (error, content) {
-            console.log('error', error)
             if (error) {
                 res.writeHead(error.code == 'ENOENT' ? 404 : 500);
                 res.end(error.code == 'ENOENT' ? 'Error 404: File not found' : 'Error 500: Server Error', 'utf-8');
