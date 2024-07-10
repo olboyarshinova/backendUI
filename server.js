@@ -111,33 +111,34 @@ const clearImages = (req, res) => {
 }
 
 const handleFileRequest = (req, res) => {
-    // var filePath = '.' + req.url;
-    //
-    // if (filePath === './')
-    //     filePath = './index.html';
-    //
-    // var extname = path.extname(filePath);
-    // var contentType = 'text/html';
-    //
-    // switch (extname) {
-    //     case '.js':
-    //         contentType = 'text/javascript';
-    //         break;
-    //     case '.css':
-    //         contentType = 'text/css';
-    //         break;
-    // }
+    var filePath = '.' + req.url;
 
-    // fs.readFile(filePath, function(error, content) {
-    //     console.log(error, content)
-        // if (error) {
-        //     res.writeHead(500);
-        //     res.end('Error: ' + error);
-        // } else {
-        //     res.writeHead(200, { 'Content-Type': contentType });
-        //     res.end(content, 'utf-8');
-        // }
-    // });
+    if (filePath === './') {
+        filePath = './index.html';
+
+        var extname = path.extname(filePath);
+        var contentType = 'text/html';
+
+        switch (extname) {
+            case '.js':
+                contentType = 'text/javascript';
+                break;
+            case '.css':
+                contentType = 'text/css';
+                break;
+        }
+
+        fs.readFile(filePath, function (error, content) {
+            console.log(error, content)
+            if (error) {
+                res.writeHead(500);
+                res.end('Error: ' + error);
+            } else {
+                res.writeHead(200, {'Content-Type': contentType});
+                res.end(content, 'utf-8');
+            }
+        });
+    }
 }
 
 const setAccessHeaders = (res) => {
