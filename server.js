@@ -111,40 +111,23 @@ const clearImages = (req, res) => {
 }
 
 const handleFileRequest = (req, res) => {
-    var filePath = '.' + req.url;
-
-    if (filePath === './') {
-        filePath = './index.html';
-    }
-
+    var filePath = '.' + (req.url === '/' ? 'index.html' : req.url);
     var extname = path.extname(filePath);
-    var contentType = 'text/html';
-
-    switch (extname) {
-        case '.js':
-            contentType = 'text/javascript';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
-        case '.jpg':
-        case '.jpeg':
-            contentType = 'image/jpeg';
-            break;
-        case '.png':
-            contentType = 'image/png';
-            break;
-    }
+    var contentType = {
+        '.js' : 'text/javascript',
+        '.css' : 'text/css',
+        '.jpg' : 'image/jpeg',
+        '.jpeg' : 'image/jpeg',
+        '.png' : 'image/png',
+        './images' : 'application/json',
+        './upload' : 'application/json',
+        './clearImages' : 'application/json'
+    }[extname] || 'text/html';
 
     fs.readFile(filePath, function (error, content) {
         if (error) {
-            if(error.code == 'ENOENT'){
-                res.writeHead(404);
-                res.end('Error 404: File not found');
-            } else {
-                res.writeHead(500);
-                res.end('Error 500: Server Error', 'utf-8');
-            }
+            res.writeHead(error.code == 'ENOENT' ? 404 : 500);
+            res.end(error.code == 'ENOENT' ? 'Error 404: File not found' : 'Error 500: Server Error', 'utf-8');
         } else {
             res.writeHead(200, {'Content-Type': contentType});
             res.end(content, 'utf-8');
