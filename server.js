@@ -115,30 +115,41 @@ const handleFileRequest = (req, res) => {
 
     if (filePath === './') {
         filePath = './index.html';
-
-        var extname = path.extname(filePath);
-        var contentType = 'text/html';
-
-        switch (extname) {
-            case '.js':
-                contentType = 'text/javascript';
-                break;
-            case '.css':
-                contentType = 'text/css';
-                break;
-        }
-
-        fs.readFile(filePath, function (error, content) {
-            console.log(error, content)
-            if (error) {
-                res.writeHead(500);
-                res.end('Error: ' + error);
-            } else {
-                res.writeHead(200, {'Content-Type': contentType});
-                res.end(content, 'utf-8');
-            }
-        });
     }
+
+    var extname = path.extname(filePath);
+    var contentType = 'text/html';
+
+    switch (extname) {
+        case '.js':
+            contentType = 'text/javascript';
+            break;
+        case '.css':
+            contentType = 'text/css';
+            break;
+        case '.jpg':
+        case '.jpeg':
+            contentType = 'image/jpeg';
+            break;
+        case '.png':
+            contentType = 'image/png';
+            break;
+    }
+
+    fs.readFile(filePath, function (error, content) {
+        if (error) {
+            if(error.code == 'ENOENT'){
+                res.writeHead(404);
+                res.end('Error 404: File not found');
+            } else {
+                res.writeHead(500);
+                res.end('Error 500: Server Error', 'utf-8');
+            }
+        } else {
+            res.writeHead(200, {'Content-Type': contentType});
+            res.end(content, 'utf-8');
+        }
+    });
 }
 
 const setAccessHeaders = (res) => {
