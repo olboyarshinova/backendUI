@@ -117,6 +117,9 @@ const handleFileRequest = (req, res) => {
 
     if (extname) {
         switch (extname) {
+            case '.html':
+                contentType = 'text/html';
+                break;
             case '.js':
                 contentType = 'text/javascript';
                 break;
