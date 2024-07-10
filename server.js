@@ -136,7 +136,7 @@ const handleFileRequest = (req, res) => {
                 contentType = 'application/json';
         }
 
-        console.log(req.url, contentType)
+        console.log(req.url, extname, filePath, contentType)
 
         fs.readFile(filePath, function (error, content) {
             if (error) {
