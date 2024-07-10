@@ -113,26 +113,41 @@ const clearImages = (req, res) => {
 const handleFileRequest = (req, res) => {
     var filePath = '.' + (req.url === '/' ? 'index.html' : req.url);
     var extname = path.extname(filePath);
-    var contentType = {
-        '.js' : 'text/javascript',
-        '.css' : 'text/css',
-        '.jpg' : 'image/jpeg',
-        '.jpeg' : 'image/jpeg',
-        '.png' : 'image/png',
-        './images' : 'application/json',
-        './upload' : 'application/json',
-        './clearImages' : 'application/json'
-    }[extname] || 'text/html';
+    var contentType;
 
-    fs.readFile(filePath, function (error, content) {
-        if (error) {
-            res.writeHead(error.code == 'ENOENT' ? 404 : 500);
-            res.end(error.code == 'ENOENT' ? 'Error 404: File not found' : 'Error 500: Server Error', 'utf-8');
-        } else {
-            res.writeHead(200, {'Content-Type': contentType});
-            res.end(content, 'utf-8');
+    if (extname) {
+        switch (extname) {
+            case '.js':
+                contentType = 'text/javascript';
+                break;
+            case '.css':
+                contentType = 'text/css';
+                break;
+            case '.jpg':
+                contentType = 'image/jpeg';
+                break;
+            case '.jpeg':
+                contentType = 'image/jpeg';
+                break;
+            case '.png':
+                contentType = 'image/png';
+                break;
+            default:
+                contentType = 'application/json';
         }
-    });
+
+        console.log(req.url, contentType)
+
+        fs.readFile(filePath, function (error, content) {
+            if (error) {
+                res.writeHead(error.code == 'ENOENT' ? 404 : 500);
+                res.end(error.code == 'ENOENT' ? 'Error 404: File not found' : 'Error 500: Server Error', 'utf-8');
+            } else {
+                res.writeHead(200, {'Content-Type': contentType});
+                res.end(content, 'utf-8');
+            }
+        });
+    }
 }
 
 const setAccessHeaders = (res) => {
