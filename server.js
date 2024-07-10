@@ -111,7 +111,7 @@ const clearImages = (req, res) => {
 }
 
 const handleFileRequest = (req, res) => {
-    var filePath = '.' + (req.url === '/' ? 'index.html' : req.url);
+    var filePath = './' + (req.url === '/' ? 'index.html' : req.url);
     var extname = path.extname(filePath);
     var contentType;
 
